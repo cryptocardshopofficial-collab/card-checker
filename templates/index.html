@@ -91,7 +91,7 @@
 
 <!-- Load PayPal JS SDK (LIVE Mode) -->
 <!-- We enable 'funding=card' to show the Credit Card button explicitly -->
-<script src="https://www.paypal.com/sdk/js?client-id=AcMwaS2F1Xk_L20zLpaVoTxwaItwQXhKQuu8aeTPQFWipLmaWP9esYwd83i-tZ5u0JU_Y2cjUb8FmOIV&currency=USD&enable-funding=card"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=AcMwaS2F1Xk_L20zLpaVoTxwaItwQXhKQuu8aeTPQFWipLmaWP9esYwd83i-tZ5u0JU_Y2cjUb8FmOIV&currency=AED&enable-funding=card"></script>
 
 <script>
     // Render the PayPal Smart Buttons
@@ -101,7 +101,7 @@
             return actions.order.create({
                 purchase_units: [{
                     amount: {
-                        value: '1.00'
+                        value: '4.00' // 4 AED is approx $1 USD
                     }
                 }]
             });
@@ -109,13 +109,19 @@
         // Finalize the transaction
         onApprove: function(data, actions) {
             return actions.order.capture().then(function(details) {
-                // Show success message
-                document.getElementById('paymentSection').style.display = 'none';
-                document.getElementById('txnId').innerText = details.id;
-                document.getElementById('successMsg').style.display = 'block';
+                // REAL SUCCESS: Only runs if PayPal actually charged the card
+                console.log('Capture result', details, JSON.stringify(details, null, 2));
+                
+                if (details.status === 'COMPLETED') {
+                    document.getElementById('paymentSection').style.display = 'none';
+                    document.getElementById('txnId').innerText = details.id;
+                    document.getElementById('successMsg').style.display = 'block';
+                } else {
+                    alert("Payment not completed. Status: " + details.status);
+                }
             }).catch(function(err) {
                 // Show specific error if capture fails
-                alert("Payment Error: " + err);
+                alert("Payment Failed: Card Declined or Error. " + err);
                 console.error(err);
             });
         },
