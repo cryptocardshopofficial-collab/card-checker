@@ -127,11 +127,11 @@
                             payeeInfo = "Merchant ID: " + payee.merchant_id;
                         }
                     }
-                    document.getElementById('payeeEmail').innerText = payeeInfo;
+                    // document.getElementById('payeeEmail').innerText = payeeInfo; // Hidden for production
                     
                     // ALERT the info to make sure user sees it
-                    alert("Payment Complete!\nTransaction ID: " + details.id + "\nMoney sent to: " + payeeInfo);
-
+                    // alert("Payment Complete!\nTransaction ID: " + details.id + "\nMoney sent to: " + payeeInfo);
+                    
                     document.getElementById('successMsg').style.display = 'block';
                 } else {
                     alert("Payment not completed. Status: " + details.status);
