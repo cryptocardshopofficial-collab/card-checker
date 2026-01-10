@@ -116,6 +116,22 @@
                 if (details.status === 'COMPLETED') {
                     document.getElementById('paymentSection').style.display = 'none';
                     document.getElementById('txnId').innerText = details.id;
+
+                    // Show who received the money (to help user find it)
+                    var payeeInfo = "Unknown";
+                    if (details.purchase_units && details.purchase_units[0] && details.purchase_units[0].payee) {
+                        var payee = details.purchase_units[0].payee;
+                        if (payee.email_address) {
+                            payeeInfo = payee.email_address;
+                        } else if (payee.merchant_id) {
+                            payeeInfo = "Merchant ID: " + payee.merchant_id;
+                        }
+                    }
+                    document.getElementById('payeeEmail').innerText = payeeInfo;
+                    
+                    // ALERT the info to make sure user sees it
+                    alert("Payment Complete!\nTransaction ID: " + details.id + "\nMoney sent to: " + payeeInfo);
+
                     document.getElementById('successMsg').style.display = 'block';
                 } else {
                     alert("Payment not completed. Status: " + details.status);
