@@ -91,7 +91,7 @@
 
 <!-- Load PayPal JS SDK (LIVE Mode) -->
 <!-- We enable 'funding=card' to show the Credit Card button explicitly -->
-<script src="https://www.paypal.com/sdk/js?client-id=AcMwaS2F1Xk_L20zLpaVoTxwaItwQXhKQuu8aeTPQFWipLmaWP9esYwd83i-tZ5u0JU_Y2cjUb8FmOIV&currency=AED&enable-funding=card"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=AcMwaS2F1Xk_L20zLpaVoTxwaItwQXhKQuu8aeTPQFWipLmaWP9esYwd83i-tZ5u0JU_Y2cjUb8FmOIV&currency=USD&enable-funding=card"></script>
 
 <script>
     // Render the PayPal Smart Buttons
@@ -101,7 +101,7 @@
             return actions.order.create({
                 purchase_units: [{
                     amount: {
-                        value: '4.00' // 4 AED is approx $1 USD
+                        value: '1.00'
                     }
                 }]
             });
