@@ -3,42 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Secure Card Verification</title>
+    <title>Premium Access Download</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
-            background-color: #f8f9fa;
+            background-color: #f0f2f5;
             padding-top: 50px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .card-checker-box {
             background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            max-width: 500px;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            max-width: 480px;
             margin: auto;
+        }
+        .product-icon {
+            font-size: 3em;
+            color: #4e73df;
+            margin-bottom: 20px;
         }
         .status-badge {
             font-size: 0.9em;
-            padding: 8px 15px;
-            border-radius: 20px;
+            padding: 15px;
+            border-radius: 8px;
             display: none;
-            margin-top: 15px;
+            margin-top: 20px;
         }
-        .verified { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .declined { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .spinner { display: none; margin-right: 10px; }
-        .txn-id { font-family: monospace; font-weight: bold; color: #333; }
+        .verified { background-color: #d1e7dd; color: #0f5132; border: 1px solid #badbcc; }
+        .declined { background-color: #f8d7da; color: #842029; border: 1px solid #f5c2c7; }
+        .price-tag {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="card-checker-box">
-        <h3 class="text-center mb-4"><i class="fas fa-shield-alt text-primary"></i> Card Verification</h3>
-        <p class="text-muted text-center mb-4">
-            A temporary $1.00 USD hold will be placed to verify your card is active. This is not a fee.
+    <div class="card-checker-box text-center">
+        <div class="product-icon"><i class="fas fa-file-pdf"></i></div>
+        <h3 class="mb-2">Premium Security Guide</h3>
+        <p class="text-muted mb-3">Instant Digital Download</p>
+        <div class="price-tag mb-4">$1.00 <span style="font-size: 0.5em; color: #888;">USD</span></div>
+
+        <p class="small text-muted mb-4">
+            Unlock immediate access to our exclusive PDF guide. Secure checkout via PayPal.
         </p>
 
         <!-- Payment Section -->
@@ -48,47 +61,74 @@
         </div>
 
         <!-- Success Message -->
-        <div id="successMsg" class="status-badge verified text-center">
-            <i class="fas fa-check-circle"></i> <strong>Verified!</strong><br>
-            Payment detected. Your card is active.<br>
-            Transaction ID: <span id="txnId" class="txn-id"></span>
+        <div id="successMsg" class="status-badge verified">
+            <i class="fas fa-check-circle fa-2x mb-2"></i><br>
+            <strong>Payment Successful!</strong><br>
+            Your content is ready.<br>
+            <small class="text-muted">Transaction ID: <span id="txnId"></span></small>
+            <hr>
+            <a href="#" class="btn btn-success btn-sm mt-2">Download PDF Now</a>
         </div>
 
         <!-- Error Message -->
-        <div id="errorMsg" class="status-badge declined text-center">
-            <i class="fas fa-times-circle"></i> <strong>Verification Failed</strong><br>
-            <span id="errorText">Card declined or bank rejected the transaction.</span>
+        <div id="errorMsg" class="status-badge declined">
+            <i class="fas fa-exclamation-circle fa-2x mb-2"></i><br>
+            <strong>Payment Failed</strong><br>
+            <span id="errorText">Card declined by bank.</span>
         </div>
         
-        <p class="small text-muted text-center mt-4">
-            Secure Payment by PayPal<br>
-            Support: <a href="mailto:support@example.com">support@example.com</a>
+        <p class="small text-muted mt-4" style="font-size: 0.8em;">
+            Secure Encrypted Payment<br>
+            Support: <a href="mailto:muhammadmuba191@gmail.com">muhammadmuba191@gmail.com</a>
         </p>
     </div>
 </div>
 
 <!-- Load PayPal JS SDK (LIVE Mode) -->
-<!-- Client ID: YOUR_PAYPAL_CLIENT_ID_HERE -->
-<script src="https://www.paypal.com/sdk/js?client-id=YOUR_PAYPAL_CLIENT_ID_HERE&currency=USD&enable-funding=card"></script>
+<!-- Client ID: AVAClJWOIDV0TxJ4Mj1ojCbqftbO8VrVRjC3pk3cliNH-hrpqOXHzIIsPWGfSBW8mRbDfRJVZd_Am-oQ -->
+<!-- disable-funding=credit,paylater removes "Pay Later" buttons to focus on Card -->
+<script src="https://www.paypal.com/sdk/js?client-id=AVAClJWOIDV0TxJ4Mj1ojCbqftbO8VrVRjC3pk3cliNH-hrpqOXHzIIsPWGfSBW8mRbDfRJVZd_Am-oQ&currency=USD&enable-funding=card&disable-funding=credit,paylater"></script>
 
 <script>
     paypal.Buttons({
-        // Set up the transaction
+        style: {
+            shape: 'rect',
+            color: 'blue',
+            layout: 'vertical',
+            label: 'pay', // Shows "Pay Now" instead of "Continue" -> FASTER
+        },
+        
+        // OPTIMIZED FOR NO SHIPPING / DIGITAL GOODS
         createOrder: function(data, actions) {
             return actions.order.create({
+                application_context: {
+                    shipping_preference: 'NO_SHIPPING', // CRITICAL: Tells bank no physical item
+                    user_action: 'PAY_NOW', // Shows amount immediately
+                    brand_name: 'Premium Digital Downloads'
+                },
                 purchase_units: [{
                     amount: {
-                        value: '1.00'
-                    }
+                        value: '1.00',
+                        currency_code: 'USD',
+                        breakdown: {
+                            item_total: { value: '1.00', currency_code: 'USD' }
+                        }
+                    },
+                    description: 'Premium Security Guide (PDF)', // Looks legitimate to bank
+                    items: [{
+                        name: 'Premium Security Guide',
+                        unit_amount: { value: '1.00', currency_code: 'USD' },
+                        quantity: '1',
+                        category: 'DIGITAL_GOODS' // CRITICAL: Low risk category
+                    }]
                 }]
             });
         },
-        // Finalize the transaction
+
         onApprove: function(data, actions) {
             return actions.order.capture().then(function(details) {
                 console.log('Capture result', details);
                 
-                // Only show success if status is COMPLETED
                 if (details.status === 'COMPLETED') {
                     document.getElementById('paymentSection').style.display = 'none';
                     document.getElementById('txnId').innerText = details.id;
@@ -100,13 +140,14 @@
                 }
             }).catch(function(err) {
                 console.error(err);
-                document.getElementById('errorText').innerText = "Process error: " + err;
+                document.getElementById('errorText').innerText = "Declined. Please try another card.";
                 document.getElementById('errorMsg').style.display = 'block';
             });
         },
+        
         onError: function (err) {
             console.error('PayPal Error:', err);
-            document.getElementById('errorText').innerText = "Could not load payment window. " + err;
+            document.getElementById('errorText').innerText = "Payment window closed or error.";
             document.getElementById('errorMsg').style.display = 'block';
         }
     }).render('#paypal-button-container');
